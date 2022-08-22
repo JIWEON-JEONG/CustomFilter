@@ -1,6 +1,8 @@
 package STUDY.CUSTOM.token;
 
+import STUDY.CUSTOM.user.Role;
 import STUDY.CUSTOM.user.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.DefaultJwtSignatureValidator;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.crypto.spec.SecretKeySpec;
+import java.math.BigInteger;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
@@ -72,14 +75,36 @@ public class TokenService {
         return parser.parseObject();
     }
 
-    public boolean checkExpToken(String token) throws RuntimeException, ParseException {
-        Map<String, Object> payload = parse(token);
-        Date expDate = (Date)payload.get("exp");
-        if (expDate.before(new Date())) {
-            throw new RuntimeException("토큰 기한 만료");
+    public boolean isAdmin(Map<String, Object> payload) throws ParseException {
+        String role = payload.get("role").toString();
+        if (role.equals(Role.ADMIN.toString())) {
+            return Boolean.TRUE;
         }
-        return true;
+        throw new RuntimeException("권한 ADMIN 아닙니다.");
     }
+
+    public boolean isUser(Map<String, Object> payload) throws ParseException {
+        String role = payload.get("role").toString();
+        if (role.equals(Role.USER.toString())) {
+            return Boolean.TRUE;
+        }
+        throw new RuntimeException("권한 USER 아닙니다.");
+    }
+
+    public void checkExpToken(String token) throws RuntimeException {
+        Claims claims = Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
+
+        Date expiration = claims.getExpiration();
+        Date current = new Date();
+
+        if (expiration.before(current)){
+            throw new RuntimeException("Token 갱신 해주세요.");
+        }
+    }
+
 
     public boolean checkValidateToken(String token) throws RuntimeException {
         String[] chunks = token.split("\\.");

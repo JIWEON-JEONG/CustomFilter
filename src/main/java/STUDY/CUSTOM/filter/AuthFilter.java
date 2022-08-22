@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+
 @Component
 @RequiredArgsConstructor
 public class AuthFilter extends OncePerRequestFilter  {
@@ -32,7 +33,6 @@ public class AuthFilter extends OncePerRequestFilter  {
                 String token = tokenExtractor.extract(request);
                 tokenValidator.validate(token);
             }
-            logger.info("WHITE LIST URI");
             filterChain.doFilter(request,response);
         } catch (Exception e) {
             logger.error(e.getMessage());

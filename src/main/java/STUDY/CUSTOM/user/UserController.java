@@ -40,6 +40,7 @@ public class UserController {
                 .email(requestDto.getEmail())
                 .password(requestDto.getPassword())
                 .build();
+        user.setRole(Role.USER);
         userRepository.save(user);
         String token = tokenService.encode(user);
         return new ResponseEntity<String>(token,HttpStatus.OK);

@@ -72,19 +72,24 @@ public void doFilter(ServletRequest request, ServletResponse response, FilterCha
 }
 ~~~
 
->꽤 자주 있는 요구 사항이다. HttpServletRequest의 body(ServletInputStream의 내용)를 로깅하는 것을 예로 들 수 있을 것 같다. HttpServletRequest는 body의 내용을 한 번만 읽을 수 있다. Rest API Application을 작성할 때, 흔히 json 형식으로 요청을 받는다. @Controller(Handler)에 요청이 들어오면서 body를 한 번 읽게 된다. 때문에 Filter나 Interceptor에서는 body를 읽을 수 없다. IOException이 발생한다. body를 로깅하기 위해서는 HttpServletRequest를 감싸서 여러 번 inputStream을 열 수 있도록 커스터마이징 된 ServletRequest를 쓸 수밖에 없다.
+>꽤 자주 있는 요구 사항이다. 
+> HttpServletRequest의 body(ServletInputStream의 내용)를 로깅하는 것을 예로 들 수 있을 것 같다. 
+> HttpServletRequest는 body의 내용을 한 번만 읽을 수 있다. Rest API Application을 작성할 때, 흔히 json 형식으로 요청을 받는다. @Controller(Handler)에 요청이 들어오면서 body를 한 번 읽게 된다. 
+> 때문에 Filter나 Interceptor에서는 body를 읽을 수 없다. IOException이 발생한다. 
+> body를 로깅하기 위해서는 HttpServletRequest를 감싸서 여러 번 inputStream을 열 수 있도록 커스터마이징 된 ServletRequest를 쓸 수밖에 없다.
 
 
 
 >하지만 인터셉터는 처리 과정이 필터와 다르다.
 > 
->디스패처 서블릿이 여러 인터셉터 목록을 가지고 있고, for문으로 순차적으로 실행시킨다. 그리고 true를 반환하면 다음 인터셉터가 실행되거나 컨트롤러로 요청이 전달되며, false가 반환되면 요청이 중단된다. 
+>디스패처 서블릿이 여러 인터셉터 목록을 가지고 있고, for문으로 순차적으로 실행시킨다. 
+> 그리고 true를 반환하면 다음 인터셉터가 실행되거나 컨트롤러로 요청이 전달되며, false가 반환되면 요청이 중단된다. 
 >
 
 ###Filter 용도 및 예시
 - 공통된 보안 및 인증/인가 관련 작업
 > 인터셉터보다 앞단에서 동작하므로 전역적으로 해야하는 보안 검사(XSS 방어 등)를 하여 올바른 요청이 아닐 경우 차단.
-> 
+>
 > 스프링 컨테이너 까지 오기 전에 차단 해버려 안정성 이점.
 - 모든 요청에 대한 로깅 또는 감사
 - 이미지/데이터 압축 및 문자열 인코딩
@@ -94,9 +99,11 @@ public void doFilter(ServletRequest request, ServletResponse response, FilterCha
 > 
 > 추가 : 예외 처리 부분 Interceptor 보다 어려울 듯.
 > 
-> 예시 : Filter는 Web Application에 등록한다(참고로, Interceptor는 Spring Context에 등록한다). 예를들어 tomcat의 경우 /WEB-INF/web.xml에 사용할 Filter를 등록하여 사용한다.
+> 예시 : Filter는 Web Application에 등록한다(참고로, Interceptor는 Spring Context에 등록한다). 
+> 예를들어 tomcat의 경우 /WEB-INF/web.xml에 사용할 Filter를 등록하여 사용한다.
 > 
->따라서, Filter에서 예외가 발생하면 Web Application에서 처리해야한다. tomcat을 사용한다면 <error-page>를 잘 선언하든가 아니면 Filter에서 예외를 잡아 request.getRequestDispatcher(String)으로 마치 핑퐁 하듯이 예외 처리를 미뤄야 한다.
+>따라서, Filter에서 예외가 발생하면 Web Application에서 처리해야한다. 
+> tomcat을 사용한다면 <error-page>를 잘 선언하든가 아니면 Filter에서 예외를 잡아 request.getRequestDispatcher(String)으로 마치 핑퐁 하듯이 예외 처리를 미뤄야 한다.
 
 ###Interceptor 용도 및 예시
 - 세부적인 보안 및 인증/인가 공통 작업
@@ -119,7 +126,6 @@ public void doFilter(ServletRequest request, ServletResponse response, FilterCha
 > 
 > SpringBoot가 서블릿 필터의 구현체 빈을 찾으면 DelegatingFilterProxy 없이 바로 필터 체인(Filter Chain)에 필터를 등록하여 사용.
 
-
 ___
 #OncePerRequestFilter 란
 >요청 당 한번의 실행을 보장.
@@ -141,11 +147,14 @@ ___
 > 
 > spring은 filter에서 spring config 설정 정보를 쉽게 처리하기 위한 GenericFilterBean을 제공한다.
 Filter를 구현한 것과 동일하고 getFilterConfig()나 getEnvironment()를 제공해주는 정도이다.
+
 ___
 #인터셉터가 아닌 필터로 구현하는 이유는?
 
 >토큰인증과 권한을 filter에서 모두 처리하면서 Error가 인증관련 문제로 나타나는 문제가 있었다. 
 > 
 >그리고 이 부분은 결과적으로 Filter에서는 인증을, Interceptor에서는 권한체크를 담당하도록 구조를 변경
+
+
 
 <img src = "/Users/BestFriend/Desktop/PROJECT/CustomFilter/src/main/java/STUDY/CUSTOM/read/images/spring_request.png"></img>
