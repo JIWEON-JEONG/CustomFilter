@@ -1,11 +1,11 @@
-#Filter 와 Interceptor
+# Filter 와 Interceptor
 >대부분 많은 웹 서비스는 로그인을 해야 서비스를 이용할 수 있다.
 > 
 >로그인을 하지 않은 사용자는 접근할 수 있는 페이지가 제한적이며 로그인이 필요한 페이지 접근이 허용되서는 안된다. 하지만, 그렇다고 로그인이 필요한 모든 컨트롤러 로직에 로그인 여부를 확인하는 코드를 작성하는 것은 너무 비효율적이다. 수정에도 취약하다.
 > 
 > 웹과 관련된 공통 관심사를 처리할 때는 HTTP의 헤더나 URL 정보가 필요한데 서블릿 필터나, 스프링 인터셉터는 HttpServletRequest를 제공하기 때문에 해당 기능을 사용하여 처리해보자.
 
-##Filter
+## Filter
 >필터(Filter)는 J2EE 표준 스펙 기능으로 디스패처 서블릿(Dispatcher Servlet)에 요청이 전달되기 전/후에 url 패턴에 맞는 모든 요청에 대해 부가작업을 처리할 수 있는 기능을 제공한다.
 > 
 > 다음 필터로 호출해주는 chain.doFilter() 전/후에  처리 코드를 넣어줌으로써 각각 전처리 후처리 모두가 가능.
@@ -16,7 +16,7 @@
 
 <img src = "/Users/BestFriend/Desktop/PROJECT/CustomFilter/src/main/java/STUDY/CUSTOM/read/images/filter.png"></img>
 
-##Interceptor
+## Interceptor
 > Spring이 제공하는 기술로써, 디스패처 서블릿(Dispatcher Servlet)이 컨트롤러를 호출하기 전과 후에 요청과 응답을 참조하거나 가공할 수 있는 기능을 제공
 > 
 > 즉, 웹 컨테이너에서 동작하는 필터와 달리 인터셉터는 스프링 컨텍스트에서 동작을 한다.
@@ -35,7 +35,7 @@
 
 
 
-###구현
+### 구현
 >인터셉터를 추가하기 위해서는 org.springframework.web.servlet의 HandlerInterceptor 인터페이스를 구현(implements)해야한다.
 - preHandle 메소드
 >preHandle 메소드는 컨트롤러가 호출되기 전에 실행된다. 
@@ -53,15 +53,15 @@
 - afterCompletion 메소드
 >afterCompletion 메소드는 이름 그대로 모든 뷰에서 최종 결과를 생성하는 일을 포함해 모든 작업이 완료된 후에 실행된다. 요청 처리 중에 사용한 리소스를 반환할 때 사용하기에 적합하다.
 
-##Interceptor 와 AOP 
+## Interceptor 와 AOP 
 >인터셉터 대신에 컨트롤러들에 적용할 부가기능을 어드바이스로 만들어 AOP(Aspect Oriented Programming, 관점 지향 프로그래밍)를 적용할 수도 있다. 
 > 
 >하지만 컨트롤러들은 타입이 일정하지 않고 호출 패턴도 정해져 있지 않기 때문에 AOP를 적용하려면 번거로운 부가 작업들이 생기게 된다.
 > 
 > 즉, 컨트롤러의 호출 과정에 적용되는 부가기능들은 인터셉터를 사용하는 편이 낫다
 
-##Filter 와 Interceptor 차이점
-###Request/Response 객체 조작 가능 여부
+## Filter 와 Interceptor 차이점
+### Request/Response 객체 조작 가능 여부
 >doFilter 메소드로 다음 필터에게 넘겨줄때,
 >우리가 원하는 request, response 객체를 만들어 넣어 줄 수 있다. 
 > 
@@ -86,7 +86,7 @@ public void doFilter(ServletRequest request, ServletResponse response, FilterCha
 > 그리고 true를 반환하면 다음 인터셉터가 실행되거나 컨트롤러로 요청이 전달되며, false가 반환되면 요청이 중단된다. 
 >
 
-###Filter 용도 및 예시
+### Filter 용도 및 예시
 - 공통된 보안 및 인증/인가 관련 작업
 > 인터셉터보다 앞단에서 동작하므로 전역적으로 해야하는 보안 검사(XSS 방어 등)를 하여 올바른 요청이 아닐 경우 차단.
 >
@@ -105,7 +105,7 @@ public void doFilter(ServletRequest request, ServletResponse response, FilterCha
 >따라서, Filter에서 예외가 발생하면 Web Application에서 처리해야한다. 
 > tomcat을 사용한다면 <error-page>를 잘 선언하든가 아니면 Filter에서 예외를 잡아 request.getRequestDispatcher(String)으로 마치 핑퐁 하듯이 예외 처리를 미뤄야 한다.
 
-###Interceptor 용도 및 예시
+### Interceptor 용도 및 예시
 - 세부적인 보안 및 인증/인가 공통 작업
 - API 호출에 대한 로깅 또는 감사
 - Controller로 넘겨주는 정보(데이터)의 가공
@@ -113,13 +113,13 @@ public void doFilter(ServletRequest request, ServletResponse response, FilterCha
 > 
 > HandlerInterceptor에서 Request에 대해 원하는 작업을 수행한 후 Request 객체를 Controller로 전달합니다.
 
-#서블릿 필터(Servlet Filter)가 스프링 빈으로 등록 가능한 이유
+# 서블릿 필터(Servlet Filter)가 스프링 빈으로 등록 가능한 이유
 ## DelegatingFilterProxy : 서블릿 컨테이너에서 관리되는 프록시용 필터
 >우리가 만든 필터는 스프링 컨테이너에 빈으로 먼저 등록된 후에 DelegatingFilterProxy에 감싸져 서블릿 컨테이너로 등록이 된다. 
 > 
 >이러한 이유로 우리가 개발한 Filter도 스프링 빈으로 등록되며, 스프링 컨테이너에서 관리되기 때문에 빈 등록뿐만 아니라 빈의 주입까지 가능하다.
 
-##Spring Boot
+## Spring Boot
 >위의 DelegatingFilterProxy를 등록하는 과정은 Spring이기 때문에 필요한 것이고, SpringBoot라면 DelegatingFilterProxy조차 필요가 없다. 
 > 
 >왜냐하면 SpringBoot가 내장 웹서버를 지원하면서 톰캣과 같은 서블릿 컨테이너까지 SpringBoot가 제어가능하기 때문.
@@ -127,10 +127,10 @@ public void doFilter(ServletRequest request, ServletResponse response, FilterCha
 > SpringBoot가 서블릿 필터의 구현체 빈을 찾으면 DelegatingFilterProxy 없이 바로 필터 체인(Filter Chain)에 필터를 등록하여 사용.
 
 ___
-#OncePerRequestFilter 란
+# OncePerRequestFilter 란
 >요청 당 한번의 실행을 보장.
 
-##예시
+## 예시
 >예를들어, 어느 필터에서 헤더를 확인 한 후 특정 url로 포워딩 시킨다고 가정하자.
 > 
 >이때 예외가 발생하지 않았다면, url로 포워딩 시키는 것 자체가 서블릿 실행 중 요청이 온 것이다.
@@ -142,14 +142,14 @@ ___
 >인증 또는 인가를 거치고나서 특정 url로 포워딩하면, 요청이 들어왔으니 인증 및 인가필터를 다시 실행시켜야 하지만, OncePerRequestFilter를 사용함으로써 인증이나 인가를 한번만 거치고 다음 로직을 진행할 수 있도록 한다.
 
 
-##GenericFilterBean
+## GenericFilterBean
 >GenericFilterBean은 기존 Filter에서 얻어올 수 없는 정보였던 Spring의 설정 정보를 가져올 수 있게 확장된 추상 클래스.
 > 
 > spring은 filter에서 spring config 설정 정보를 쉽게 처리하기 위한 GenericFilterBean을 제공한다.
 Filter를 구현한 것과 동일하고 getFilterConfig()나 getEnvironment()를 제공해주는 정도이다.
 
 ___
-#인터셉터가 아닌 필터로 구현하는 이유는?
+# 인터셉터가 아닌 필터로 구현하는 이유는?
 
 >토큰인증과 권한을 filter에서 모두 처리하면서 Error가 인증관련 문제로 나타나는 문제가 있었다. 
 > 

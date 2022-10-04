@@ -4,6 +4,7 @@ import STUDY.CUSTOM.token.TokenExtractor;
 import STUDY.CUSTOM.token.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.Filter;
@@ -15,7 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CheckRoleInterceptor implements HandlerInterceptor {
 
-//    private static final String[] whitelist = {"/", "/login", "/join"};
+    private static final String[] whitelist = {"/", "/login", "/join"};
 
     private final TokenService tokenService;
 
@@ -25,9 +26,9 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         log.info("CheckRoleInterceptor 동작");
         String requestURI = request.getRequestURI();
-//        if (!checkIsNotWhitelist(requestURI)) {
-//            return Boolean.TRUE;
-//        }
+        if (!checkIsNotWhitelist(requestURI)) {
+            return Boolean.TRUE;
+        }
         String token = tokenExtractor.extract(request);
         Map<String, Object> payload = tokenService.parse(token);
         if (requestURI.startsWith("/admin")) {
@@ -36,8 +37,8 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
         return tokenService.isUser(payload);
     }
 
-//    private boolean checkIsNotWhitelist(String requestURI) {
-//        return !PatternMatchUtils.simpleMatch(whitelist, requestURI);
-//    }
+    private boolean checkIsNotWhitelist(String requestURI) {
+        return !PatternMatchUtils.simpleMatch(whitelist, requestURI);
+    }
 
 }

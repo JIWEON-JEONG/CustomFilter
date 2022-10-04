@@ -1,7 +1,6 @@
 package STUDY.CUSTOM.config;
 
 import STUDY.CUSTOM.filter.AuthFilter;
-import STUDY.CUSTOM.interceptor.CheckRoleInterceptor;
 import STUDY.CUSTOM.token.TokenExtractor;
 import STUDY.CUSTOM.token.TokenService;
 import STUDY.CUSTOM.token.TokenValidator;
@@ -21,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final AuthFilter authFilter;
 
-    private final CheckRoleInterceptor checkRoleInterceptor;
+//    private final CheckRoleInterceptor checkRoleInterceptor;
 
     @Bean
     public FilterRegistrationBean tokenFilter() {
@@ -34,11 +33,11 @@ public class WebConfig implements WebMvcConfigurer {
         return filterRegistrationBean;
     }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(checkRoleInterceptor)
-                .order(1)
-                .addPathPatterns("/*")
-                .excludePathPatterns("/login", "/", "/join");
-    }
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(checkRoleInterceptor)
+//                .order(1)
+//                .addPathPatterns("/*")
+//                .excludePathPatterns("/login", "/", "/join");
+//    }
 }
