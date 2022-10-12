@@ -4,6 +4,7 @@ import STUDY.CUSTOM.token.TokenExtractor;
 import STUDY.CUSTOM.token.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -14,6 +15,7 @@ import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
+@Component
 public class CheckRoleInterceptor implements HandlerInterceptor {
 
     private static final String[] whitelist = {"/", "/login", "/join"};
